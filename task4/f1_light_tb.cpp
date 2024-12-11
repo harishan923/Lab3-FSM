@@ -13,7 +13,7 @@ int main(int argc, char **argv, char **env)
 
     Verilated::commandArgs(argc, argv);
     // init top verilog instance
-    Vdelay *top = new Vdelay;
+    Vf1_light *top = new Vf1_light;
     // init trace dump
     Verilated::traceEverOn(true);
     VerilatedVcdC *tfp = new VerilatedVcdC;
@@ -47,7 +47,7 @@ int main(int argc, char **argv, char **env)
         if (top->time_out)
         {
             vbdBar(lights);
-            lights = lights ^ 0xFF;
+            lights = lights ^ top->data_out;
         }
         // set up input signals of testbench
         top->rst = (simcyc < 2); // assert reset for 1st cycle
