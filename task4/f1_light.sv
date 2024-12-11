@@ -4,31 +4,27 @@ module f1_light (
 
     input   logic       cmd_seq_in,     //mux
     input   logic       cmd_delay_in,   //delay
-    input   logic [4:0] clktick_data_in,//clktick 
+    input   logic [4:0] n,//clktick 
     input   logic       trigger,        //fsm
+    
 
     output  logic       cmd_seq_out,    //fsm
     output  logic       cmd_delay_out,  //fsm    
-    output  logic [7:0] data_out        //fsm
+    output  logic [7:0] data_out,        //fsm
+    output logic        delay_time_out        //debug
 
 );
 
 logic [6:0] lsfr_data_out; //lsfr
 
-logic delay_time_out;
+//logic delay_time_out;
 
 logic fsm_en;          //fsm
 
 logic clktick_out;
 
-lfsr lfsr (
-    .clk(clk),
-    .rst(rst),
-    .sreg(lsfr_data_out)
-);
-
 clktick clktick(
-    .N(clktick_data_in),
+    .N(n),
     .en(cmd_seq_in),
     .rst(rst),
     .clk(clk),
@@ -36,7 +32,6 @@ clktick clktick(
 );
 
 delay delay(
-    .K(lsfr_data_out),
     .trigger(cmd_delay_in),
     .rst(rst),
     .clk(clk),

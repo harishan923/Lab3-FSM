@@ -1,10 +1,10 @@
 module lfsr (
     input   logic       clk,
     input   logic       rst,
-    output  logic [7:1] sreg //no data_out
+    output  logic [7:1] sreg // data_out
 );
 
-always_ff @ (posedge clk, posedge rst)
+always_ff @ (posedge clk)
     if (rst)
         sreg <= 7'b1;
     else

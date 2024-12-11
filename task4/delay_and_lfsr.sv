@@ -9,6 +9,8 @@ module delay #(
 
     output  logic               time_out    // output pulse signal
 );
+    // Declare counter
+    //logic [6:0] K;
 
     logic [WIDTH-1:0]   count = {WIDTH{1'b0}};            // internal counter
 
@@ -17,10 +19,17 @@ module delay #(
     my_state current_state, next_state;
 
     // counter
+    /*always_ff @ (posedge clk)
+    if (rst)
+        K <= 7'b1;
+    else
+        K <= {K[5:0], K[6] ^ K[2]};
 
     always_ff @(posedge clk)
         if (rst | trigger | count=={WIDTH{1'b0}}) count <= K - 1'b1;
         else                                count <= count - 1'b1;
+    
+    */
 
     // state transition
     always_ff @(posedge clk)

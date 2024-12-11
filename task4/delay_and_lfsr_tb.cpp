@@ -1,6 +1,6 @@
 #include "verilated.h"
 #include "verilated_vcd_c.h"
-#include "Vf1_light.h"
+#include "Vdelay_and_lfsr.h"
 #include <iostream>
 #include <string>
 
@@ -15,7 +15,7 @@ int main(int argc, char **argv, char **env)
 
     Verilated::commandArgs(argc, argv);
     // init top verilog instance
-    Vf1_light *top = new Vf1_light;
+    Vdelay_and_lfsr *top = new Vdelay_and_lfsr;
     // init trace dump
     Verilated::traceEverOn(true);
     VerilatedVcdC *tfp = new VerilatedVcdC;
@@ -25,18 +25,14 @@ int main(int argc, char **argv, char **env)
     // init Vbuddy
     if (vbdOpen() != 1)
         return (-1);
-    vbdHeader("L4: F1");
+    vbdHeader("Delay + LFSR test");
     vbdSetMode(1); // Flag mode set to one-shot
 
     // initialize simulation inputs
     top->clk = 1;
-    top->trigger = 0;
-    top->cmd_seq_in = 0;
-    //top->cmd_delay_in = 0;
-    top->n = vbdValue();
+    top->trigger = 1;
+    top->K = 0b1111111;
     vbdBar(0);
-    //top->cmd_delay_in = 1;
-    //qtop->cmd_delay_out = 1;
 
     // run simulation for MAX_SIM_CYC clock cycles
     for (simcyc = 0; simcyc < MAX_SIM_CYC; simcyc++)
@@ -49,30 +45,16 @@ int main(int argc, char **argv, char **env)
             top->eval();
         }
 
-        if (top->trigger){
-            top->cmd_seq_in = 1;
-        }
-
         // Display toggle neopixel
-        //if (top->cmd_seq_in)
-        if (top->delay_time_out)
+        if (top->time_out)
         {
-            vbdBar(lights);
-            //lights = lights ^ top->data_out; - funkier version
-            if (top->cmd_seq_in || top->delay_time_out){
-                lights = top->data_out;
-            }
-            
-            if(top->data_out==0b111111111){
-                top->cmd_seq_in = 0;
-                top->cmd_delay_in = 1;
-            }
+            vbdBar(top->time_out);
         }
 
         
 
         top->rst = (simcyc < 2); // assert reset for 1st cycle
-        top->trigger = vbdFlag();
+        //top->trigger = vbdFlag();
         
         vbdCycle(simcyc);
 
